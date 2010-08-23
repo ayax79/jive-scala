@@ -1,17 +1,18 @@
 package com.syncapse.jive.content
 
-import com.jivesoftware.community.JiveContentObject
 import org.joda.time.DateTime
 import com.jivesoftware.base.User
+import com.jivesoftware.community.{JiveContentObject}
+import com.jivesoftware.community.objecttype.JiveObjectType
 
 trait Contentable extends JiveContentObject with JiveObjectAble {
 
   var plainSubject = ""
   var subject = ""
-  var jiveObjectType = null
-  var containerID = 0L
-  var contentType = 0
-  var containerType = 0L
+  var jiveObjectType: JiveObjectType = null
+  var containerID: Long = 0L
+  var contentType: Int = 0
+  var containerType: Int = 0
   var status = null
   var unfilteredSubject = ""
   var modificationDate : DateTime = null

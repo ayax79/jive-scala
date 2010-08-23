@@ -5,9 +5,9 @@ import java.lang.String
 import com.jivesoftware.community.impl.DbImage
 import com.jivesoftware.community.{ImageException, Image, ImageContentResource}
 import com.jivesoftware.community.event.ImageEvent
-import java.util.{Collections}
 import actors.Actor
 import com.syncapse.jive.event.JiveEventDispatcher
+import java.util.{HashMap, Collections, Map => JMap}
 
 trait Imageable extends ImageContentResource with JiveObjectAble {
   protected case class DeleteImage(image: DbImage)
@@ -20,14 +20,14 @@ trait Imageable extends ImageContentResource with JiveObjectAble {
       react {
         case DeleteImage(i) => {
           images = images - i.getID
-          fireImageEvent(image, ImageEvent.Type.DELETED)
+          fireImageEvent(i, ImageEvent.Type.DELETED)
         }
       }
     }
   }
 
   def deleteImage(image: Image) = {
-    ImageActor ! DbImage(image)
+    ImageActor ! DeleteImage(asDbImage(image))
   }
 
   def addImage(image: Image) = {}
@@ -42,11 +42,11 @@ trait Imageable extends ImageContentResource with JiveObjectAble {
 
   protected def asDbImage(image: Image): DbImage =
     if (image.isInstanceOf[DbImage]) {
-      dbImage = image.asInstanceOf[DbImage]
+      image.asInstanceOf[DbImage]
     }
     else {
       try {
-        dbImage = getImage(image.getID).asInstanceOf[DbImage]
+        getImage(image.getID).asInstanceOf[DbImage]
       }
       catch {
         case e: Exception =>
@@ -55,6 +55,7 @@ trait Imageable extends ImageContentResource with JiveObjectAble {
     }
 
   protected def fireImageEvent(image: Image, imageType: ImageEvent.Type) {
-    JiveEventDispatcher.fire(new ImageEvent(imageType, this, image, Collections.emptyMap))
+    val params: JMap[java.lang.String, _ <: java.lang.Object] = new HashMap
+    JiveEventDispatcher.fire(new ImageEvent(imageType, this, image, params))
   }
 }

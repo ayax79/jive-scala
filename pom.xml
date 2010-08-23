@@ -43,12 +43,14 @@
             <version>4.4</version>
             <scope>test</scope>
         </dependency>
+        <!-- 1.6.5 release doesn't seem to be avail yet, needed for 2.8 release (no specs yet anyway)
         <dependency>
             <groupId>org.specs</groupId>
             <artifactId>specs</artifactId>
-            <version>1.2.5</version>
+            <version>1.6.5</version>
             <scope>test</scope>
         </dependency>
+        -->
         <dependency>
             <groupId>com.jivesoftware</groupId>
             <artifactId>jive-sbs-employee</artifactId>
