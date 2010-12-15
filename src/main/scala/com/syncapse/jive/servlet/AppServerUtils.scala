@@ -1,10 +1,11 @@
 package com.syncapse.jive.servlet
 
-import org.apache.catalina.core.{StandardContext, ApplicationContextFacade}
 import javax.management.ObjectName
 import javax.servlet.ServletContext
 import com.syncapse.jive.Loggable
 import org.apache.catalina.deploy.{FilterMap, FilterDef}
+import org.apache.catalina.core.{ApplicationContext, StandardContext, ApplicationContextFacade}
+import java.lang.reflect.Field
 
 trait AppServerWrapper {
   def registerFilter(servletContext: ServletContext, filterName: String, filterClass: String, filterMapping: String)
@@ -24,18 +25,33 @@ object AppServerUtils extends AppServerWrapper with Loggable {
 
   protected object TomcatWrapper extends AppServerWrapper {
     def registerFilter(servletContext: ServletContext, filterName: String, filterClass: String, filterMapping: String) = {
-      val field = classOf[ApplicationContextFacade].getField("context")
-      field.setAccessible(true)
+      def getField[T](nm: String, c: Class[T]): Option[Field] = c.getDeclaredFields.toList.find{
+        p => p.getName == nm
+      }
 
-      field.get("context") match {
-        case sc: StandardContext => handleStandardContext(sc, filterName, filterClass, filterMapping)
-        case _ => logger.warn("Context is of an unown type")
+      getField("context", classOf[ApplicationContextFacade]) match {
+        case Some(field) =>
+          field.setAccessible(true)
+          field.get(servletContext) match {
+            case sc: StandardContext => handleStandardContext(sc, filterName, filterClass, filterMapping)
+            case ac: ApplicationContext => getField("context", ac.getClass) match {
+              case Some(field2) =>
+                field2.setAccessible(true)
+                field2.get(ac) match {
+                  case sc2: StandardContext => handleStandardContext(sc2, filterName, filterClass, filterMapping)
+                  case _ => logger.warn("Context is of an unknown type")
+                }
+              case None => logger.warn("could not find the context field")
+            }
+            case _ => logger.warn("Context is of an unknown type")
+          }
+        case None => logger.warn("Could not find the context field")
       }
     }
 
     protected def checkServletExists(children: List[ObjectName], nm: String): Boolean = children match {
       case Nil => false
-      case head :: tail if (head.getCanonicalName == nm) => true
+      case head :: tail if (head != null && head.getCanonicalName == nm) => true
       case head :: tail => checkServletExists(tail, nm)
     }
 
@@ -50,6 +66,7 @@ object AppServerUtils extends AppServerWrapper with Loggable {
     protected def buildFilterDef(filterName: String, filterClass: String): FilterDef = {
       val fd = new FilterDef
       fd.setFilterName(filterName)
+      fd.setDisplayName(filterName)
       fd.setFilterClass(filterClass)
       fd
     }
@@ -60,6 +77,7 @@ object AppServerUtils extends AppServerWrapper with Loggable {
       fm.setDispatcher(filterMapping)
       fm
     }
-
   }
+
+
 }

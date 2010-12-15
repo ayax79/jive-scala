@@ -1,9 +1,6 @@
 package com.syncapse.jive.event
 
-import com.jivesoftware.clearspace.event.BaseEvent
-import com.jivesoftware.base.event.v2.EventDispatcher
-import com.jivesoftware.community.lifecycle.JiveApplication
-import com.jivesoftware.community.{JiveEvent, JiveContext}
+import com.jivesoftware.community.JiveEvent
 
 object JiveEventDispatcher {
 

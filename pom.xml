@@ -86,9 +86,9 @@
         </dependency>
         <dependency>
             <groupId>org.apache.tomcat</groupId>
-            <!--<artifactId>catalina</artifactId>-->
             <artifactId>coyote</artifactId>
             <version>6.0.29</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 
@@ -149,6 +149,19 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
     <reporting>
@@ -162,4 +175,16 @@
             </plugin>
         </plugins>
     </reporting>
+    <distributionManagement>
+        <repository>
+            <id>nexus.releases</id>
+            <url>http://jive-dev.syncapsedev.com/nexus/content/repositories/releases</url>
+            <name>Syncapse Nexus Releases repository</name>
+        </repository>
+        <snapshotRepository>
+            <id>nexus.snapshots</id>
+            <url>http://jive-dev.syncapsedev.com/nexus/content/repositories/snapshots</url>
+            <name>Syncapse Nexus Releases repository</name>
+        </snapshotRepository>
+    </distributionManagement>
 </project>
