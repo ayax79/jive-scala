@@ -52,6 +52,7 @@ object AppServerUtils extends AppServerWrapper with Loggable {
         case None => logger.warn("Could not find the context field")
       }
 
+
       Thread.currentThread.setContextClassLoader(oldLoader)
     }
 
