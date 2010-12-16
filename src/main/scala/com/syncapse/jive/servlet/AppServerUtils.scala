@@ -8,13 +8,14 @@ import org.apache.catalina.core.{ApplicationContext, StandardContext, Applicatio
 import java.lang.reflect.Field
 
 trait AppServerWrapper {
-  def registerFilter(servletContext: ServletContext, filterName: String, filterClass: String, filterMapping: String)
+  def registerFilter(servletContext: ServletContext, filterName: String, filterClass: String, filterMapping: String, cl: ClassLoader)
 }
 
 object AppServerUtils extends AppServerWrapper with Loggable {
 
-  def registerFilter(servletContext: ServletContext, filterName: String, filterClass: String, filterMapping: String) = determineAppServer(servletContext) match {
-    case Some(asw) => asw.registerFilter(servletContext, filterName, filterClass, filterMapping)
+  def registerFilter(servletContext: ServletContext, filterName: String, filterClass: String, filterMapping: String, cl: ClassLoader)
+    = determineAppServer(servletContext) match {
+    case Some(asw) => asw.registerFilter(servletContext, filterName, filterClass, filterMapping, cl)
     case None => throw new IllegalArgumentException("Could not determine app server")
   }
 
@@ -24,10 +25,13 @@ object AppServerUtils extends AppServerWrapper with Loggable {
   }
 
   protected object TomcatWrapper extends AppServerWrapper {
-    def registerFilter(servletContext: ServletContext, filterName: String, filterClass: String, filterMapping: String) = {
+    def registerFilter(servletContext: ServletContext, filterName: String, filterClass: String, filterMapping: String, cl: ClassLoader) = {
       def getField[T](nm: String, c: Class[T]): Option[Field] = c.getDeclaredFields.toList.find{
         p => p.getName == nm
       }
+      val oldLoader = Thread.currentThread.getContextClassLoader
+      Thread.currentThread.setContextClassLoader(cl)
+
 
       getField("context", classOf[ApplicationContextFacade]) match {
         case Some(field) =>
@@ -47,6 +51,8 @@ object AppServerUtils extends AppServerWrapper with Loggable {
           }
         case None => logger.warn("Could not find the context field")
       }
+
+      Thread.currentThread.setContextClassLoader(oldLoader)
     }
 
     protected def checkServletExists(children: List[ObjectName], nm: String): Boolean = children match {
