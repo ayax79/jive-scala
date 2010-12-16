@@ -5,7 +5,7 @@ import javax.servlet.ServletContext
 
 trait ServletContextComponent extends ServletContextAware {
 
-  protected var servletContext: ServletContext = null
+  protected var servletContext: ServletContext = _
 
   def setServletContext(p1: ServletContext) = {
     servletContext = p1
