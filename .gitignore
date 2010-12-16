@@ -2,3 +2,5 @@
 *.iml
 *.iws
 *.tmp
+target
+.idea
