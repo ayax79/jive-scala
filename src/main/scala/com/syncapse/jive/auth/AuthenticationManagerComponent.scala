@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Required
 
 trait AuthenticationManagerComponent {
 
-  protected var authenticationManager: AuthenticationManager
+  protected var authenticationManager: AuthenticationManager = null
 
   @Required
   def setAuthenticationManager(a: AuthenticationManager) = {
