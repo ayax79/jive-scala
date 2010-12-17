@@ -43,14 +43,11 @@
             <version>4.4</version>
             <scope>test</scope>
         </dependency>
-        <!-- 1.6.5 release doesn't seem to be avail yet, needed for 2.8 release (no specs yet anyway)
         <dependency>
-            <groupId>org.specs</groupId>
-            <artifactId>specs</artifactId>
-            <version>1.6.5</version>
-            <scope>test</scope>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>1.8.5</version>
         </dependency>
-        -->
         <dependency>
             <groupId>com.jivesoftware</groupId>
             <artifactId>jive-sbs-employee</artifactId>

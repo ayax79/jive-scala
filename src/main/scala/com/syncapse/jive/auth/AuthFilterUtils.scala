@@ -2,34 +2,32 @@ package com.syncapse.jive.auth
 
 import com.jivesoftware.community.JiveContext
 import com.jivesoftware.community.lifecycle.JiveApplication
-import java.util.{Map => JMap, List => JList}
 import javax.servlet.Filter
 import collection.JavaConversions
-import org.acegisecurity.util.FilterChainProxy
+import org.springframework.security.util.FilterChainProxy
+import java.util.{Map => JMap, List => JList}
+import com.syncapse.jive.Loggable
 
-object AuthFilterUtils {
+object AuthFilterUtils extends Loggable {
 
-  protected val DEFAULT_PATTERN = "/**"
-
-  def addFilterPattern(pattern: String, beanNames: String*) = JiveApplication.getContext match {
+  def addPrePluginFilter(pattern: String, beanNames: String*) = JiveApplication.getContext match {
     case ctx: JiveContext =>
-      val filterChainProxy = acquireFilterChainProxy(ctx)
-      val chainMap = filterChainProxy.getFilterChainMap.asInstanceOf[JMap[String, JList[Filter]]]
-      val defaultFilterChain = chainMap.remove(DEFAULT_PATTERN).asInstanceOf[JList[Filter]]
-      val myChain = buildFilterList(ctx, beanNames.toList)
-      chainMap.put(pattern, myChain)
-      chainMap.put(DEFAULT_PATTERN, defaultFilterChain)
+      val filterChainProxy = acquirePreFilterChainProxy(ctx)
+      val chainMap: JMap[String, JList[Filter]] = filterChainProxy.getFilterChainMap.asInstanceOf[JMap[String, JList[Filter]]]
+      val myFilterList = buildFilterList(ctx, beanNames.toList)
+      logger.info("Adding to prePluginFilter list {} : {}", pattern, myFilterList)
+      chainMap.put(pattern, JavaConversions.asJavaList(myFilterList))
     case _ => throw new IllegalArgumentException("No jive context could be obtained")
   }
 
-  protected def acquireFilterChainProxy(context: JiveContext): FilterChainProxy =
-    context.getSpringBean("filterChainProxy").asInstanceOf[FilterChainProxy]
+  protected[auth] def acquirePreFilterChainProxy(context: JiveContext): FilterChainProxy =
+    context.getSpringBean("pluginPreFilterChain").asInstanceOf[FilterChainProxy]
 
 
-  protected def buildFilterList(ctx: JiveContext, beanNames: List[String]): JList[Filter] =
-    JavaConversions.asJavaList(beanNames.map{
-      b => ctx.getSpringBean(b)
-    })
+  protected[auth] def buildFilterList(ctx: JiveContext, beanNames: List[String]): List[Filter] =
+    beanNames.map{
+      b => ctx.getSpringBean(b).asInstanceOf[Filter]
+    }
 
 
 }
