@@ -174,12 +174,12 @@
     </reporting>
     <distributionManagement>
         <repository>
-            <id>nexus.releases</id>
+            <id>syncapse.releases</id>
             <url>http://jive-dev.syncapsedev.com/nexus/content/repositories/releases</url>
             <name>Syncapse Nexus Releases repository</name>
         </repository>
         <snapshotRepository>
-            <id>nexus.snapshots</id>
+            <id>syncapse.snapshots</id>
             <url>http://jive-dev.syncapsedev.com/nexus/content/repositories/snapshots</url>
             <name>Syncapse Nexus Releases repository</name>
         </snapshotRepository>
