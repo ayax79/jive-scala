@@ -82,9 +82,9 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.apache.tomcat</groupId>
-            <artifactId>coyote</artifactId>
-            <version>6.0.29</version>
+            <groupId>servletapi</groupId>
+            <artifactId>servletapi</artifactId>
+            <version>2.4</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
@@ -149,12 +149,13 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
+                <version>2.1.2</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
                         <phase>verify</phase>
                         <goals>
-                            <goal>jar</goal>
+                            <goal>jar-no-fork</goal>
                         </goals>
                     </execution>
                 </executions>
@@ -175,12 +176,12 @@
     <distributionManagement>
         <repository>
             <id>syncapse.releases</id>
-            <url>http://jive-dev.syncapsedev.com/nexus/content/repositories/releases</url>
+            <url>http://jive-dev.syncapsedev.com/nexus/content/repositories/releases/</url>
             <name>Syncapse Nexus Releases repository</name>
         </repository>
         <snapshotRepository>
             <id>syncapse.snapshots</id>
-            <url>http://jive-dev.syncapsedev.com/nexus/content/repositories/snapshots</url>
+            <url>http://jive-dev.syncapsedev.com/nexus/content/repositories/snapshots/</url>
             <name>Syncapse Nexus Releases repository</name>
         </snapshotRepository>
     </distributionManagement>
